@@ -7,8 +7,6 @@ import argparse
 import random
 import time
 from torch import cuda
-import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
 from sklearn.model_selection import StratifiedKFold
 
 
@@ -145,7 +143,6 @@ with open(result_file_path, "a") as f:
     f.write(f"# dataset={args.data_dataset}, aug={args.data_augment}, depth={args.model_depth}, steps={args.diffusion_timesteps}\n")
     f.write(f"# joint_train={args.diffusion_pred_model_joint_train}, pred_epochs={args.train_pred_model_epochs}, epochs={args.training_num_epochs}, eval_best={args.eval_best}\n")
     f.write(f"# aug_times={args.data_augment_times}, aug_method={args.data_augment_method}\n")
-    # 简约的表头
     f.write("Fold\tPre_Acc\tJoint_Acc\tAcc\tSen\tSpe\tF1\tPrec\tRec\tTime(min)\n")
     f.write("-"*80 + "\n")
 
@@ -157,8 +154,7 @@ for fold, (train_idx, test_idx) in enumerate(skf.split(data, labels)):
     
     print(f'Fold {fold}:')
     print('Train:', train_data.size(), 'Test:', test_data.size())
-
-    ## 准备好模型
+    
     model = Diffusion(args)
     pretrain_train_acc, pretrain_test_acc, joint_train_train_acc, joint_train_test_acc = model.train(
         fold, train_data, train_labels, test_data, test_labels)
@@ -215,4 +211,5 @@ with open(result_file_path, "a") as f:
 
 global_end_time = time.time()
 print(f"\nTotal time: {(global_end_time - global_start_time)/60:.2f} min")
+
 print(f"Average fold time: {mean_time:.2f} min")
